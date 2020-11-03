@@ -1,16 +1,21 @@
 package main;
 
+import pagamentos.Cartao;
+import pagamentos.Cliente;
+import pagamentos.FabricaPagamento;
+import pagamentos.ProcessadorPagamentoToolkit;
 import pagamentos.ProcessadorPagamentos;
 import pagamentos.paypal.CartaoPaypal;
 import pagamentos.paypal.ClientePaypal;
+import pagamentos.paypal.FabricaPagamentoPaypal;
 import pagamentos.paypal.LojaPaypal;
 
 public class Main {
 
 	public static void main(String[] args) {
-		usandoPagamentosPaypalSemFabrica();
+//		usandoPagamentosPaypalSemFabrica();
 		usandoFabricaPagamentosPaypal();
-		usandoFabricaPagamentosPagseguro();
+//		usandoFabricaPagamentosPagseguro();
 	}
 	
 	public static void usandoPagamentosPaypalSemFabrica() {
@@ -45,9 +50,27 @@ public class Main {
 		 * PERGUNTA ABSTRACT.FACOTRY.A: Mudar de fabrica concreta, assumindo que ja esteja codificada, geralmente
 		 * impacta no Cliente somente na linha para instanciar tal fabrica concreta? Isso eh bom?
 		 * 
-		 * [COLOQUE SUA RESPOSTA]
+		 * [Sim, ao precisar mudar o tipo concreto de fabrica, apenas precisarei mudar a linha que está instanciando
+		 * a mesma, e isso é bom pois não trará nenhum impacto as operações feitas usando essa fabrica e os produtos, 
+		 * pois o código se tornou fexível, e agora todas as fabricas concretas tratam os produtos da mesma forma.]
+		 * 
+		 * 
 		 * 
 		 */
+		
+		FabricaPagamento fabrica = new FabricaPagamentoPaypal();
+		
+		ProcessadorPagamentoToolkit processadorPagaamentoToolkit = new ProcessadorPagamentoToolkit(fabrica);
+	
+		Cartao cartao = fabrica.fabricarCartao();
+		cartao.setCVV("509");
+		cartao.setNumero("0008989511122211112323");
+		cartao.setSenha("7878");
+		
+		Cliente cliente = fabrica.fabricarCliente();
+		cliente.setCPF("000.000.000-50");
+		
+		processadorPagaamentoToolkit.autorizarPagto(1200f, 0.015f, (short) 10, cartao, cliente);
 	}
 	
 	public static void usandoFabricaPagamentosPagseguro() {

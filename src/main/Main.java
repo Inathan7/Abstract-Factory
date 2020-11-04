@@ -5,6 +5,7 @@ import pagamentos.Cliente;
 import pagamentos.FabricaPagamento;
 import pagamentos.ProcessadorPagamentoToolkit;
 import pagamentos.ProcessadorPagamentos;
+import pagamentos.pagseguro.FabricaPagamentoPagseguro;
 import pagamentos.paypal.CartaoPaypal;
 import pagamentos.paypal.ClientePaypal;
 import pagamentos.paypal.FabricaPagamentoPaypal;
@@ -13,9 +14,9 @@ import pagamentos.paypal.LojaPaypal;
 public class Main {
 
 	public static void main(String[] args) {
-//		usandoPagamentosPaypalSemFabrica();
+		usandoPagamentosPaypalSemFabrica();
 		usandoFabricaPagamentosPaypal();
-//		usandoFabricaPagamentosPagseguro();
+		usandoFabricaPagamentosPagseguro();
 	}
 	
 	public static void usandoPagamentosPaypalSemFabrica() {
@@ -90,12 +91,15 @@ public class Main {
 		 * 
 		 * PERGUNTA ABSTRACT.FACOTRY.B: O que voce teve que fazer para disponibilizar a fabrica de produtos-objeto do Pagseguro?
 		 * 
-		 * [COLOQUE SUA RESPOSTA]
+		 * []
 		 * 
 		 * PERGUNTA ABSTRACT.FACOTRY.C: O que voce teve que fazer para usar a fabrica do Pagseguro? ProcessadorPagamentoToolkit teve que ser mudado
 		 * para lidar com essa nova fabrica de produtos? 
 		 * 
-		 * [COLOQUE SUA RESPOSTA]
+		 * [Para usar a fabrica do Pagseguro foi necessário apenas fazer um "new FabricaPagamentoPagseguro();"
+		 *  e todos os objetos fabricados através dessa fabrica já se tornaram objetos pagseguro automaticamente e flexivelmente,
+		 *  pois ProcessadorPagamentoToolkit não precisou ser mudado para lhe dar com esse tipo concreto de fabrica, pois ele ver
+		 *  as fabricas pelo seu supertipo.]
 		 * 
 		 * PERGUNTA ABSTRACT.FACOTRY.D: Nosso codigo simulou produtos concretos para familias Paypal e Pagseguro. 
 		 * Nesse caso, devemos entender que tais produtos numa implementacao real utilizariam outros objetos de APIs (.jar) providas
@@ -104,5 +108,19 @@ public class Main {
 		 * [COLOQUE SUA RESPOSTA]
 		 * 
 		 */
+		
+		FabricaPagamento fabrica = new FabricaPagamentoPagseguro();
+		
+		ProcessadorPagamentoToolkit processadorPagaamentoToolkit = new ProcessadorPagamentoToolkit(fabrica);
+	
+		Cartao cartao = fabrica.fabricarCartao();
+		cartao.setCVV("509");
+		cartao.setNumero("0008989511122211112323");
+		cartao.setSenha("7878");
+		
+		Cliente cliente = fabrica.fabricarCliente();
+		cliente.setCPF("000.000.000-50");
+		
+		processadorPagaamentoToolkit.autorizarPagto(1200f, 0.015f, (short) 10, cartao, cliente);
 	}
 }

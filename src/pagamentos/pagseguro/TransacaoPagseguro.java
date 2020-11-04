@@ -1,4 +1,4 @@
-package pagamentos.paypal;
+package pagamentos.pagseguro;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -10,11 +10,11 @@ import pagamentos.Cliente;
 import pagamentos.Loja;
 import pagamentos.Transacao;
 
-public class TransacaoPaypal implements Transacao {
-
-	private CartaoPaypal cartao;
-	private ClientePaypal cliente;
-	private LojaPaypal loja;
+public class TransacaoPagseguro implements Transacao{
+	
+	private CartaoPagseguro cartao;
+	private ClientePagseguro cliente;
+	private LojaPagseguro loja;
 	private float valor;
 	private float setJuros;
 	private short parcelas;
@@ -22,26 +22,26 @@ public class TransacaoPaypal implements Transacao {
 
 	@Override
 	public void setCartao(Cartao cartao) {
-		if (cartao instanceof CartaoPaypal) {
-			this.cartao = (CartaoPaypal) cartao;
+		if (cartao instanceof CartaoPagseguro) {
+			this.cartao = (CartaoPagseguro) cartao;
 		} else {
-			System.out.println("Cartao incompativel para paypal.com");
+			System.out.println("Cartao incompativel para pagseguro.com.br");
 		}
 	}
 
 	@Override
 	public void setCliente(Cliente cliente) {
-		if (cliente instanceof ClientePaypal) {
-			this.cliente = (ClientePaypal) cliente;
+		if (cliente instanceof ClientePagseguro) {
+			this.cliente = (ClientePagseguro) cliente;
 		} else {
-			System.out.println("Cliente incompativel para paypal.com");
+			System.out.println("Cliente incompativel para pagseguro.com.br");
 		}
 	}
 
 	@Override
 	public void setLoja(Loja loja) {
-		if (loja instanceof LojaPaypal) {
-			this.loja = (LojaPaypal) loja;
+		if (loja instanceof LojaPagseguro) {
+			this.loja = (LojaPagseguro) loja;
 		}
 	}
 
@@ -99,12 +99,12 @@ public class TransacaoPaypal implements Transacao {
 	@Override
 	public boolean autorizar() {
 		if (this.valor <= 0) {
-			System.out.println("Transacao com valor menor igual a zero nao pode sere enviada para paypal.com");
+			System.out.println("Transacao com valor menor igual a zero nao pode sere enviada para pagseguro.com.br");
 			return false;
 		}
-		System.out.println("Enviando transacao para paypal.com");
+		System.out.println("Enviando transacao para pagseguro.com.br");
 		System.out.println(serialize());
-		System.out.println("chave SHA-256");
+		System.out.println("chave MD5");
 		System.out.println(encriptar(serialize()));
 		return true;
 	}
@@ -113,35 +113,35 @@ public class TransacaoPaypal implements Transacao {
 	public boolean cancelar() {
 		if (!this.cancelada) {
 			this.cancelada = true;
-			System.out.println("Enviando transasao para paypal.com");
+			System.out.println("Enviando transasao para pagseguro.com.br");
 			System.out.println(serialize());
-			System.out.println("chave SHA-256");
+			System.out.println("chave MD5");
 			System.out.println(encriptar(serialize()));
 		} else
-			System.out.println("Transacao ja cancelada e nao pode ser enviada para paypal.com");
+			System.out.println("Transacao ja cancelada e nao pode ser enviada para pagseguro.com.br");
 			
 		return false;
 	}
 	
 	private String serialize() {
-		//retorna representando como um objeto JSON
-		return "transacao: {"
-				+ "\ncartao: " + this.cartao.getNumero() + this.cartao.getCVV()
-				+ "\ncliente.senha: " + this.cartao.getSenha()
-				+ "\ncliente.cpf: " + this.cliente.getCPF()
-				+ "\nestabelecimento: " + this.loja.getCodigo()
-				+ "\ncompra.valor: " + this.valor
-				+ "\ncompra.parcelas " + this.parcelas
-				+ "\ncompra.juros" + this.setJuros
-				+ "\ncompra.data" + new Date().getTime()
-				+ "\nmodo: " + ((this.cancelada)? "cancel" : "new")
-			+ "\n}";
+		//retorna representando como um objeto XML
+		return "<transacao>"
+				+ "\n<cartao> " + this.cartao.getNumero() + this.cartao.getCVV() + " </cartao>"
+				+ "\n<cliente.senha> " + this.cartao.getSenha() + " </cliente.senha>"
+				+ "\n<cliente.cpf> " + this.cliente.getCPF() + " </cliente.cpf>"
+				+ "\n<estabelecimento> " + this.loja.getCodigo() + " </estabelecimento>"
+				+ "\n<compra.valor> " + this.valor + " </compra.valor>"
+				+ "\n<compra.parcelas> " + this.parcelas + " </compra.parcelas"
+				+ "\n<compra.juros> " + this.setJuros + "</compra.juros>"
+				+ "\n<compra.data> " + new Date().getTime() + "</compra.data>"
+				+ "\n<modo> " + ((this.cancelada)? "cancel" : "new") + "</modo>"
+			+ "\n<transacao>";
 	}
 	
 	private String encriptar(String valor) {
 		MessageDigest digest;
 		try {
-			digest = MessageDigest.getInstance("SHA-256");
+			digest = MessageDigest.getInstance("MD5");
 			byte[] hash = digest.digest(valor.getBytes(StandardCharsets.UTF_8));
 			new StringBuffer().append(hash).toString();
 		} catch (NoSuchAlgorithmException e) {

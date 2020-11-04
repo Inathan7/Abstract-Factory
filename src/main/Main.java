@@ -91,7 +91,7 @@ public class Main {
 		 * 
 		 * PERGUNTA ABSTRACT.FACOTRY.B: O que voce teve que fazer para disponibilizar a fabrica de produtos-objeto do Pagseguro?
 		 * 
-		 * []
+		 * [Foi necessário apenas fazer a classe da fabrica do pagseguro implementar a interface da fabrica abstrata.]
 		 * 
 		 * PERGUNTA ABSTRACT.FACOTRY.C: O que voce teve que fazer para usar a fabrica do Pagseguro? ProcessadorPagamentoToolkit teve que ser mudado
 		 * para lidar com essa nova fabrica de produtos? 
@@ -105,7 +105,9 @@ public class Main {
 		 * Nesse caso, devemos entender que tais produtos numa implementacao real utilizariam outros objetos de APIs (.jar) providas
 		 * por essas empresas de pagamento? Explique isso considerando uma nova familia de pagamenos denominada Cielo.
 		 * 
-		 * [COLOQUE SUA RESPOSTA]
+		 * [Provavelmente seria usado APIS sim, Produtos seriam codificados utilizando as APIS desejadas e isso
+		 * não traria impactos no cliente, pois os produtos Cielo ainda sim implementariam o supertipo de produto e
+		 * seriam criados através da fabrica concreta de Cielo que implementaria a interface de fabrica abstrata.]
 		 * 
 		 */
 		
